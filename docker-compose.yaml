@@ -1,0 +1,33 @@
+version: "2"
+
+services:
+  master:
+    image: ikuai/spark
+    command: start-spark master
+    hostname: master
+    container_name: master
+    environment:
+      HDFS_USER: root
+    ports:
+      - "4040:4040"
+      - "6066:6066"
+      - "7070:7070"
+      - "8080:8080"
+      - "8088:8088"
+      - "50070:50070"
+    volumes:
+      - "./volumes/slaves:/usr/local/hadoop-2.8.3/etc/hadoop/slaves"
+      - "./volumes/yarn-site.xml:/usr/local/hadoop-2.8.3/etc/hadoop/yarn-site.xml"
+  worker1:
+    image: ikuai/spark
+    command: start-spark worker master
+    hostname: worker1
+    container_name: worker1
+    environment:
+      HDFS_USER: root
+      SPARK_WORKER_CORES: 1
+      SPARK_WORKER_MEMORY: 2g
+    links:
+      - master
+    volumes:
+      - "./volumes/yarn-site.xml:/usr/local/hadoop-2.8.3/etc/hadoop/yarn-site.xml"
